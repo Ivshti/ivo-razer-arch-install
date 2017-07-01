@@ -21,7 +21,7 @@ wifi-menu
 
 # add zfs repo
 echo "[archzfs]" >> /etc/pacman.conf
-echo "Server = http://archzfs.com/$repo/x86_64" >> /etc/pacman.conf
+echo 'Server = http://archzfs.com/$repo/x86_64' >> /etc/pacman.conf
 
 pacman-key -r 5E1ABF240EE7A126
 pacman-key --lsign-key 5E1ABF240EE7A126
@@ -35,6 +35,9 @@ pacman -S zfs-linux-git
 
 # zfs setup
 touch /etc/zfs/zpool.cache
+
+# init zfs
+modprobe zfs
 
 #setup ZFS (ashift for modern drives, ssd)
 zpool create -f -o ashift=12 -o cachefile=/etc/zfs/zpool.cache -O normalization=formD -m none -R /mnt rpool /dev/mapper/cryptroot
@@ -77,7 +80,6 @@ arch-chroot /mnt /bin/bash
 # set locale
 # edit /etc/locale.gen
 en_US.UTF-8 UTF-8
-de_DE.UTF-8 UTF-8
 
 # generate locale
 locale-gen
@@ -86,7 +88,7 @@ locale-gen
 echo LANG=en_US.UTF-8 > /etc/locale.conf
 
 # set timezone
-ln -s /usr/share/zoneinfo/Europe/Berlin /etc/localtime
+ln -s /usr/share/zoneinfo/Europe/Sofia /etc/localtime
 
 # set hardware clock
 hwclock --systohc --utc
@@ -95,7 +97,7 @@ hwclock --systohc --utc
 pacman -S ntp
 
 # add country pools to conf
-# nano /etc/ntp.conf
+# vim /etc/ntp.conf
 
 # sync time
 ntpd -q
@@ -120,8 +122,15 @@ pacman -Su --ignore filesystem,bash
 pacman -S bash
 pacman -Su
 
+# add zfs repo
+echo "[archzfs]" >> /etc/pacman.conf
+echo 'Server = http://archzfs.com/$repo/x86_64' >> /etc/pacman.conf
+
+pacman-key -r 5E1ABF240EE7A126
+pacman-key --lsign-key 5E1ABF240EE7A126
+
 # install other needed packages
-pacman -S gnupg vim zfs-linux
+pacman -S vim zfs-linux-git
 
 # enable zfs automount
 systemctl enable zfs.target
@@ -144,6 +153,10 @@ echo <name> > /etc/hostname
 # EFISTUB refind
 #
 
+mkdir /boot/efi
+# mount /boot/efi
+
+
 # install refind
 pacman -S refind-efi
 
@@ -151,12 +164,12 @@ pacman -S refind-efi
 mkdir -p /mnt/boot/efi/EFI/refind/{drivers,icons}
 
 # copy default files
-# refind_install
-cp /usr/lib/refind/refind_<arch>.efi /boot/efi/EFI/refind/
-cp /usr/lib/refind/refind.conf /boot/efi/EFI/refind/
-cp /usr/lib/refind/drivers/* /boot/efi/EFI/refind/drivers/
-cp /usr/share/refind/icons/* /boot/efi/EFI/refind/icons/
-cp /usr/lib/refind/config/refind_linux.conf /boot/
+# refind-install
+# cp /usr/lib/refind/refind_<arch>.efi /boot/efi/EFI/refind/
+# cp /usr/lib/refind/refind.conf /boot/efi/EFI/refind/
+# cp /usr/lib/refind/drivers/* /boot/efi/EFI/refind/drivers/
+# cp /usr/share/refind/icons/* /boot/efi/EFI/refind/icons/
+# cp /usr/lib/refind/config/refind_linux.conf /boot/
 
 # edit /boot/refind_linux.conf
 "Boot with defaults" "cryptdevice=/dev/disk/by-partuuid/:cryptroot zfs=rpool/ROOT/rootfs rw"
