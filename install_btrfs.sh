@@ -4,7 +4,7 @@
 # start at 1MB (sector 2048)
 512Mib EFI
 512Mib Boot
-Rest ZFS
+Rest BTRFS
 
 #setup encrypted partition
 cryptsetup luksFormat -l 512 -c aes-xts-plain64 -h sha512 /dev/disk/by-partuuid/<uid>
@@ -19,50 +19,27 @@ cryptsetup luksOpen /dev/disk/by-partuuid/<uid> cryptroot
 # setup networking
 wifi-menu
 
-# add zfs repo
-echo "[archzfs]" >> /etc/pacman.conf
-echo 'Server = http://archzfs.com/$repo/x86_64' >> /etc/pacman.conf
-
-pacman-key -r 5E1ABF240EE7A126
-pacman-key --lsign-key 5E1ABF240EE7A126
-
 # update package index
 pacman -Syy
 
-# install archzfs
-# default: all
-pacman -S zfs-linux-git
+#  setup btrfs
+mkfs.btrfs /dev/mapper/cryptroot
 
-# zfs setup
-touch /etc/zfs/zpool.cache
+mount /dev/mapper/cryptroot /mnt
 
-# init zfs
-modprobe zfs
+btrfs subvolume create /mnt/@root
+btrfs subvolume create /mnt/@var
+btrfs subvolume create /mnt/@home
+btrfs subvolume create /mnt/@snapshots
 
-#setup ZFS (ashift for modern drives, ssd)
-zpool create -f -o ashift=12 -o cachefile=/etc/zfs/zpool.cache -O normalization=formD -m none -R /mnt rpool /dev/mapper/cryptroot
-
-zfs create -o mountpoint=none -o compression=lz4 rpool/ROOT
-
-#rootfs 
-# DONT'T CREATE extra /usr on arch, see here:
-#  - http://freedesktop.org/wiki/Software/systemd/separate-usr-is-broken/
-#  - https://wiki.archlinux.org/index.php/Mkinitcpio
-zfs create -o mountpoint=/ rpool/ROOT/rootfs
-zfs create -o mountpoint=/opt rpool/ROOT/rootfs/OPT
-
-#homedirs
-zfs create -o mountpoint=/home rpool/HOME
-zfs create -o mountpoint=/root rpool/HOME/root
-
-##zpool set bootfs=rpool rpool
-
-# export and reimport pool, so you don't need to force next import
-zpool export rpool
-zpool import -R /mnt rpool
+umount /mnt
+mount -o noatime,compress=lzo,space_cache,subvol=@root /dev/mapper/cryptroot /mnt
+mkdir /mnt/{boot,var,home,.snapshots}
+mount -o noatime,compress=lzo,space_cache,subvol=@var /dev/mapper/cryptroo /mnt/var
+mount -o noatime,compress=lzo,space_cache,subvol=@home /dev/mapper/cryptroo /mnt/home
+mount -o noatime,compress=lzo,space_cache,subvol=@snapshots /dev/mapper/cryptroo /mnt/.snapshots
 
 # mount boot partitions
-mkdir /mnt/boot
 mount /dev/disk/by-partuuid/<uid> /mnt/boot
 
 # install base system
