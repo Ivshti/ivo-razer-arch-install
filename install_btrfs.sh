@@ -6,6 +6,9 @@
 512Mib Boot
 Rest BTRFS
 
+#mkfs.fat -F32 /dev/nvme0n1p6
+
+
 #setup encrypted partition
 cryptsetup luksFormat -l 512 -c aes-xts-plain64 -h sha512 /dev/disk/by-partuuid/<uid>
 cryptsetup luksOpen /dev/disk/by-partuuid/<uid> cryptroot
@@ -42,11 +45,16 @@ mount -o noatime,compress=lzo,space_cache,subvol=@snapshots /dev/mapper/cryptroo
 # mount boot partitions
 mount /dev/disk/by-partuuid/<uid> /mnt/boot
 
+
+# speed up pacman
+cp /etc/pacman.d/mirrorlist /etc/pacman.d/mirrorlist.backup
+rankmirrors -n 6 /etc/pacman.d/mirrorlist.backup > /etc/pacman.d/mirrorlist 
+
 # install base system
-pacstrap -i /mnt base base-devel
+pacstrap -i /mnt base base-devel git lxqt lxdm
 
 # create fstab
-genfstab -U -p /mnt | grep boot >> /mnt/etc/fstab
+genfstab -U -p /mnt > /mnt/etc/fstab
 
 # load efivars for UEFI
 #modprobe efivars
@@ -99,24 +107,6 @@ pacman -Su --ignore filesystem,bash
 pacman -S bash
 pacman -Su
 
-# add zfs repo
-echo "[archzfs]" >> /etc/pacman.conf
-echo 'Server = http://archzfs.com/$repo/x86_64' >> /etc/pacman.conf
-
-pacman-key -r 5E1ABF240EE7A126
-pacman-key --lsign-key 5E1ABF240EE7A126
-
-# install other needed packages
-pacman -S vim zfs-linux-git
-
-# enable zfs automount
-systemctl enable zfs.target
-
-# add hooks for initramfs
-# edit /etc/mkinitcpio.conf
-#
-# HOOKS=... keyboard before encrypt before zfs before filesystems. No fsck.
-# MODULES="dm_mod"
 
 # make initramfs
 mkinitcpio -p linux
@@ -136,35 +126,21 @@ mkdir /boot/efi
 
 # install refind
 pacman -S refind-efi
-
-# create refind directories
-mkdir -p /mnt/boot/efi/EFI/refind/{drivers,icons}
-
-# copy default files
-# refind-install
-# cp /usr/lib/refind/refind_<arch>.efi /boot/efi/EFI/refind/
-# cp /usr/lib/refind/refind.conf /boot/efi/EFI/refind/
-# cp /usr/lib/refind/drivers/* /boot/efi/EFI/refind/drivers/
-# cp /usr/share/refind/icons/* /boot/efi/EFI/refind/icons/
-# cp /usr/lib/refind/config/refind_linux.conf /boot/
-
-# edit /boot/refind_linux.conf
-"Boot with defaults" "cryptdevice=/dev/disk/by-partuuid/:cryptroot zfs=rpool/ROOT/rootfs rw"
+refind-install
 
 # add refind to efi
 modprobe efivars
 1 -c -d /dev/disk/by-id/<id> -p <efi_partition_nr> -l /EFI/refind/refind_<arch>.efi -L "rEFInd"
 
-# exit chroot
+btrfs subvolume snapshot -r / /.snapshots/@root-`date +%F-%R`
 
-# copy zpool.cache to chroot
-# cp /etc/zfs/zpool.cache /mnt/etc/zfs/
+# exit chroot
+exit
+
 
 # umount /boot and /boot/efi
 umount /mnt/boot/efi
 umount /mnt/boot
 
-# export zfs
-zpool export rpool
 
 # reboot
