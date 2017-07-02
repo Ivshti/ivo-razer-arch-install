@@ -107,6 +107,15 @@ pacman -Su --ignore filesystem,bash
 pacman -S bash
 pacman -Su
 
+# 14 - fix the mkinitcpio.conf to contain what we actually need.
+vi /etc/mkinitcpio.conf
+# on the MODULES section, add "vfat aes_x86_64 crc32c-intel" (and whatever else you know your hardware needs. Mine needs i915 too)
+# on the BINARIES section, add "/usr/bin/btrfsck", since it's useful to have in case your filesystem has troubles
+# on the HOOKS section: 
+#  - add "resume" after "udev" (IF and ONLY IF you want to enable resume support)
+#  - add "encrypt" before "filesystems"
+#  - remove "fsck" and 
+#  - add "btrfs" at the end
 
 # make initramfs
 mkinitcpio -p linux
