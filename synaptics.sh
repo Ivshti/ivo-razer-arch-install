@@ -1,6 +1,6 @@
 #!/bin/env bash
 
-DEVID=17
+DEVID=$(xinput list | grep Synaptics | awk '{print $5}' | cut -d'=' -f2)
 
 # palm detection
 xinput set-prop $DEVID "Synaptics Palm Detection" 1
