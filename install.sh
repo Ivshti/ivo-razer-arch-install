@@ -176,7 +176,7 @@ mkdir -p /mnt/boot/efi/EFI/refind/{drivers,icons}
 
 # add refind to efi
 modprobe efivars
-efibootmgr -c -d /dev/disk/by-id/<id> -p <efi_partition_nr> -l /EFI/refind/refind_<arch>.efi -L "rEFInd"
+1 -c -d /dev/disk/by-id/<id> -p <efi_partition_nr> -l /EFI/refind/refind_<arch>.efi -L "rEFInd"
 
 # exit chroot
 
