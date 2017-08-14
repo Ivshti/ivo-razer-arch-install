@@ -4,6 +4,7 @@ DEVID=$(xinput list | grep Synaptics | awk '{print $5}' | cut -d'=' -f2)
 
 # palm detection
 xinput set-prop $DEVID "Synaptics Palm Detection" 1
+xinput set-prop $DEVID "Synaptics Palm Dimensions" 5, 80
 #natural scrolling
 xinput set-prop $DEVID "Synaptics Scrolling Distance" -94 -94
 # tap to click, two f fingers is right click
