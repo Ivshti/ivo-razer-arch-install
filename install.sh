@@ -156,6 +156,10 @@ echo <name> > /etc/hostname
 mkdir /boot/efi
 # mount /boot/efi
 
+# install chrony
+pacman -S chrony
+systemctl enable chronyd
+
 
 # install refind
 pacman -S refind-efi
