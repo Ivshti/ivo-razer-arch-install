@@ -4,5 +4,5 @@ https://wiki.archlinux.org/index.php/Electronic_identification#Estonia
 
 
 ```
-yaourt -S chrome-token-signing qdigidoc qesteidutil libdigidoc libdigidocpp
+yaourt -S chrome-token-signing qdigidoc qesteidutil libdigidoc libdigidocp esteidfirefoxplugin
 ```
