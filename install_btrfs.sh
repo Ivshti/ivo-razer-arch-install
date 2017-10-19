@@ -38,9 +38,9 @@ btrfs subvolume create /mnt/@snapshots
 umount /mnt
 mount -o noatime,compress=lzo,space_cache,subvol=@root /dev/mapper/cryptroot /mnt
 mkdir /mnt/{boot,var,home,.snapshots}
-mount -o noatime,compress=lzo,space_cache,subvol=@var /dev/mapper/cryptroo /mnt/var
-mount -o noatime,compress=lzo,space_cache,subvol=@home /dev/mapper/cryptroo /mnt/home
-mount -o noatime,compress=lzo,space_cache,subvol=@snapshots /dev/mapper/cryptroo /mnt/.snapshots
+mount -o noatime,compress=lzo,space_cache,subvol=@var /dev/mapper/cryptroot /mnt/var
+mount -o noatime,compress=lzo,space_cache,subvol=@home /dev/mapper/cryptroot /mnt/home
+mount -o noatime,compress=lzo,space_cache,subvol=@snapshots /dev/mapper/cryptroot /mnt/.snapshots
 
 # mount boot partitions
 mount /dev/disk/by-partuuid/<uid> /mnt/boot
