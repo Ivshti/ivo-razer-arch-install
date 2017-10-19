@@ -76,7 +76,7 @@ echo LANG=en_US.UTF-8 > /etc/locale.conf
 ln -s /usr/share/zoneinfo/Europe/Sofia /etc/localtime
 
 # set hardware clock
-hwclock --systohc --utc
+#hwclock --systohc --utc
 
 # install ntp
 pacman -S ntp
@@ -85,7 +85,7 @@ pacman -S ntp
 # vim /etc/ntp.conf
 
 # sync time
-ntpd -q
+ntpd -qg
 
 # save to hardware clock
 hwclock -w
