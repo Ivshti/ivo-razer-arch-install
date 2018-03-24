@@ -1,0 +1,1 @@
+./sendString.rb $(gpg --decrypt ./bitlocker.gpg) | sudo socat - UNIX-CONNECT:/tmp/win
