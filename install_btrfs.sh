@@ -139,6 +139,8 @@ refind-install
 
 # add refind to efi
 modprobe efivars
+mount -t efivarfs efivarfs /sys/firmware/efi/efivars
+
 1 -c -d /dev/disk/by-id/<id> -p <efi_partition_nr> -l /EFI/refind/refind_<arch>.efi -L "rEFInd"
 
 btrfs subvolume snapshot -r / /.snapshots/@root-`date +%F-%R`
