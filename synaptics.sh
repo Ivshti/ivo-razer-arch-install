@@ -1,6 +1,6 @@
 #!/bin/env bash
 
-DEVID=$(xinput list | grep Synaptics | awk '{print $5}' | cut -d'=' -f2)
+DEVID=$(xinput list | grep Synaptics | grep -Eio '(touchpad|glidepoint)\s*id\=[0-9]{1,2}' | grep -Eo '[0-9]{1,2}')
 
 # palm detection
 xinput set-prop $DEVID "Synaptics Palm Detection" 1
