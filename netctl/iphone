@@ -1,0 +1,4 @@
+Interface=enp0s20f0u1c4i2
+Connection=ethernet
+IP=dhcp
+Description=iPhone
