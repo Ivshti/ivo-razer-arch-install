@@ -15,12 +15,14 @@ if [ -e "$IMAGE_FILE" ]; then
 	exit 1
 fi
 
-# @TODO: mount existing
+# @TODO: mount existing file
 
 # Prepare filesystem
-dd if=/dev/zero of="$IMAGE_FILE" bs=1M count=70000
+echo "Preparing file"
+fallocate -l 80G "$IMAGE_FILE"
 losetup "$LOOP_DEV" "$IMAGE_FILE"
 
+echo "Preparing filesystem, cryptsetup"
 cryptsetup -vy luksFormat "$LOOP_DEV"
 cryptsetup luksOpen "$LOOP_DEV" systemVol
 
@@ -28,9 +30,11 @@ mkfs.ext4 /dev/mapper/systemVol
 mount /dev/mapper/systemVol /mnt
 
 # backup
+echo "Preparing backup"
 rsync -aAX / --exclude={"/home/ivo/storage","/.snapshots/*","/dev/*","/proc/*","/sys/*","/tmp/*","/run/*","/mnt/*","/media/*","/lost+found"} /mnt
 
 # clean-up
+echo "Finalizing backup"
 umount /mnt
 cryptsetup luksClose systemVol
 
