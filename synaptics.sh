@@ -12,10 +12,12 @@ xinput set-prop $DEVID "Synaptics Scrolling Distance" -94 -94
 xinput set-prop $DEVID  "Synaptics Tap Action" 0 0 0 0 1 3 2
 # Speed
 
+xinput set-prop $DEVID "Synaptics Finger" 25, 30, 45
+
 # Disable while typing - workaround to touchpad not working
-syndaemon -i 0.4 -t -d -K -R
+syndaemon -i 0.4 -t -d -R # -K
 
 
-synclient PalmDetect=1
-synclient PalmMinWidth=5
-synclient PalmMinZ=10
+#synclient PalmDetect=1
+#synclient PalmMinWidth=5
+#synclient PalmMinZ=10
