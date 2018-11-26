@@ -1,0 +1,2 @@
+( printf "power on\nscan on\n"; sleep 5; echo "connect F8:DF:15:E6:E0:1A") | bluetoothctl
+

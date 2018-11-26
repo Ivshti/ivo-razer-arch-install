@@ -31,12 +31,13 @@ mount /dev/mapper/systemVol /mnt
 
 # backup
 echo "Preparing backup"
-rsync -aAX / --exclude={"/home/ivo/storage","/.snapshots/*","/dev/*","/proc/*","/sys/*","/tmp/*","/run/*","/mnt/*","/media/*","/lost+found"} /mnt
+rsync -aAXl / --exclude={"/home/ivo/storage","/.snapshots/*","/dev/*","/proc/*","/sys/*","/tmp/*","/run/*","/mnt/*","/media/*","/lost+found","/home/ivo/repos"} /mnt
 
 # clean-up
 echo "Finalizing backup"
 umount /mnt
 cryptsetup luksClose systemVol
+losetup -d /dev/loop0
 
 # compress
 gzip "$IMAGE_FILE"
