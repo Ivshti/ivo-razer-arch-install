@@ -2,8 +2,11 @@
 
 set -e 
 
-IMAGE_FILE=/home/ivo/storage/system-`date +"%d-%m-%Y"`
-#IMAGE_FILE=/home/ivo/storage/system-`date +"%m-%Y"`
+#sudo mount /dev/sda1 /home/ivo/storage/sysbackups/
+
+IMAGE_FILE=/home/ivo/storage/sysbackups/system-latest
+#IMAGE_FILE=/home/ivo/storage/sysbackups/system-`date +"%d-%m-%Y"`
+#IMAGE_FILE=/home/ivo/storage/sysbackups/system-`date +"%m-%Y"`
 LOOP_DEV="/dev/loop0"
 SIZE="50G"
 
