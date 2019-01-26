@@ -11,27 +11,34 @@ if [[ $EUID -ne 0 ]]; then
 fi
 
 if [ -e "$IMAGE_FILE" ]; then
-	echo "File $IMAGE_FILE exists"
-	exit 1
+	echo "File $IMAGE_FILE exists, updating backup"
+	exit 
+else
+	# Prepare filesystem
+	echo "Preparing file"
+	fallocate -l 80G "$IMAGE_FILE"
+	losetup "$LOOP_DEV" "$IMAGE_FILE"
+
+	echo "Preparing filesystem, cryptsetup"
+	cryptsetup -vy luksFormat "$LOOP_DEV"
+
+	cryptsetup luksOpen "$LOOP_DEV" systemVol
+
+	mkfs.ext4 /dev/mapper/systemVol
+	mount /dev/mapper/systemVol /mnt
 fi
 
-# @TODO: mount existing file
-
-# Prepare filesystem
-echo "Preparing file"
-fallocate -l 80G "$IMAGE_FILE"
-losetup "$LOOP_DEV" "$IMAGE_FILE"
-
-echo "Preparing filesystem, cryptsetup"
-cryptsetup -vy luksFormat "$LOOP_DEV"
-cryptsetup luksOpen "$LOOP_DEV" systemVol
-
-mkfs.ext4 /dev/mapper/systemVol
-mount /dev/mapper/systemVol /mnt
+# ensure it's mounted
+if grep -qs '/mnt ' /proc/mounts; then
+	echo "Preparing backup"
+else
+	echo "/mnt is not mounted"
+	losetup -d /dev/loop0
+	exit
+fi
 
 # backup
-echo "Preparing backup"
-rsync -aAXl / --exclude={"/home/ivo/storage","/.snapshots/*","/dev/*","/proc/*","/sys/*","/tmp/*","/run/*","/mnt/*","/media/*","/lost+found","/home/ivo/repos"} /mnt
+rsync --info=progress2 --human-readable --exclude node_modules --exclude .DS_Store --exclude target --exclude={"/home/ivo/storage","/.snapshots/*","/dev/*","/proc/*","/sys/*","/tmp/*","/run/*","/mnt/*","/media/*","/lost+found","/home/ivo/repos","*node_modules*","*/target/*","/var/lib/docker"} -aAXl / /mnt
 
 # clean-up
 echo "Finalizing backup"
