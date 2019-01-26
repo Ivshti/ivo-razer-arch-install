@@ -5,5 +5,5 @@
 ```bash
 sudo mount /dev/sda1 /home/ivo/storage/sysbackups/
 sudo ./systemBackup.sh
-cp /home/ivo/storage/sysbackups/system-latest /home/ivo/storage/sysbackups/system-`date +"%d-%m-%Y"`
+sudo cp /home/ivo/storage/sysbackups/system-latest /home/ivo/storage/sysbackups/system-`date +"%d-%m-%Y"`
 ```
