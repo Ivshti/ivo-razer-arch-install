@@ -3,7 +3,9 @@
 set -e 
 
 IMAGE_FILE=/home/ivo/storage/system-`date +"%d-%m-%Y"`
+#IMAGE_FILE=/home/ivo/storage/system-`date +"%m-%Y"`
 LOOP_DEV="/dev/loop0"
+SIZE="50G"
 
 if [[ $EUID -ne 0 ]]; then
    echo "This script must be run as root" 
@@ -12,11 +14,13 @@ fi
 
 if [ -e "$IMAGE_FILE" ]; then
 	echo "File $IMAGE_FILE exists, updating backup"
-	exit 
+	losetup "$LOOP_DEV" "$IMAGE_FILE"
+	cryptsetup luksOpen "$LOOP_DEV" systemVol
+	mount /dev/mapper/systemVol /mnt
 else
 	# Prepare filesystem
 	echo "Preparing file"
-	fallocate -l 80G "$IMAGE_FILE"
+	fallocate -l "$SIZE" "$IMAGE_FILE"
 	losetup "$LOOP_DEV" "$IMAGE_FILE"
 
 	echo "Preparing filesystem, cryptsetup"
@@ -47,4 +51,4 @@ cryptsetup luksClose systemVol
 losetup -d /dev/loop0
 
 # compress
-gzip "$IMAGE_FILE"
+#gzip "$IMAGE_FILE"
