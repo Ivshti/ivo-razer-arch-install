@@ -8,7 +8,7 @@ IMAGE_FILE=/home/ivo/storage/sysbackups/system-latest
 #IMAGE_FILE=/home/ivo/storage/sysbackups/system-`date +"%d-%m-%Y"`
 #IMAGE_FILE=/home/ivo/storage/sysbackups/system-`date +"%m-%Y"`
 LOOP_DEV="/dev/loop0"
-SIZE="50G"
+SIZE="110G"
 
 if [[ $EUID -ne 0 ]]; then
    echo "This script must be run as root" 
@@ -45,7 +45,7 @@ else
 fi
 
 # backup
-rsync --info=progress2 --human-readable --exclude node_modules --exclude .DS_Store --exclude target --exclude={"/home/ivo/storage","/.snapshots/*","/dev/*","/proc/*","/sys/*","/tmp/*","/run/*","/mnt/*","/media/*","/lost+found","/home/ivo/repos","*node_modules*","*/target/*","/var/lib/docker"} -aAXl / /mnt
+rsync --info=progress2 --human-readable --exclude node_modules --exclude .DS_Store --exclude target --exclude={"/home/ivo/storage","/home/ivo/.stremio-server","/home/ivo/.npm","/.snapshots/*","/dev/*","/proc/*","/sys/*","/tmp/*","/run/*","/mnt/*","/media/*","/lost+found","/home/ivo/repos","*node_modules*","*/target/*","/var/lib/docker","/var/lib/dhcpcd","/var/log","/var/cache"} -aAXl / /mnt
 
 # clean-up
 echo "Finalizing backup"
