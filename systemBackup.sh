@@ -45,7 +45,7 @@ else
 fi
 
 # backup
-rsync --info=progress2 --human-readable --exclude node_modules --exclude .DS_Store --exclude target --exclude={"/home/ivo/storage","/home/ivo/.ipfs","/home/ivo/.stremio-server","/home/ivo/.npm","/.snapshots/*","/dev/*","/proc/*","/sys/*","/tmp/*","/run/*","/mnt/*","/media/*","/lost+found","/home/ivo/repos","*node_modules*","*/target/*","/var/lib/docker","/var/lib/dhcpcd","/var/log","/var/cache"} -aAXl / /mnt
+rsync --info=progress2 --human-readable --exclude node_modules --exclude .DS_Store --exclude target --exclude={"/home/ivo/storage","/home/ivo/.ipfs","/home/ivo/.stremio-server","/home/ivo/.npm",".npm","stremio-cache","/.snapshots/*","/dev/*","/proc/*","/sys/*","/tmp/*","/run/*","/mnt/*","/media/*","/lost+found","/home/ivo/repos","*node_modules*","*/target/*","/var/lib/docker","/var/lib/dhcpcd","/var/log","/var/cache","/home/ivo/.rustup","/home/ivo/.cache"} -aAXl / /mnt
 
 # clean-up
 echo "Finalizing backup"
